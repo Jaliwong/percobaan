@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoIndo - Jelajah Indonesia</title>
+  <style>
+    .header {
+      background-color: rgba(52, 152, 219, 0.8); 
+      color: white;
+      padding: 80px;
+      text-align: center;
+      border-radius: 10px;
+      margin: 20px;
+      animation: slideIn 1s ease-out;
+  }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #d1def8;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 28px;
+      animation: slideInFromTop 1s ease-out;
+    }
+
+    @keyframes slideInFromTop {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .input-container, .output-container {
+      width: 100%;
+      max-width: 500px;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .input-container div {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      width: calc(100% - 22px);
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      transition: transform 0.3s ease;
+    }
+
+    input:focus {
+      transform: scale(1.05);
+      border-color: #3498db;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: transform 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+      transform: scale(1.05);
+    }
+
+    .info-box {
+      display: none;
+      flex-direction: column;
+      align-items: center; /* Teks berada di tengah secara horizontal */
+      justify-content: center; /* Teks berada di tengah secara vertikal */
+      text-align: center;
+      gap: 10px;
+      animation: fadeInOutput 1s ease-in-out;
+    }
+
+    @keyframes fadeInOutput {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .info-box img {
+      display: block;
+      margin: 0 auto;
+      max-width: 200px;
+      max-height: 200px;
+      width: auto;
+      height: auto;
+      object-fit: cover;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+
+    .info-box p {
+      margin: 5px 0;
+      text-align: center; /* Teks di dalam paragraf juga di tengah */
+    }
+
+    .info-box h2 {
+      text-align: center; /* Nama provinsi juga di tengah */
+    }
+  </style>
+</head>
+<body>
+  <h1>GeoIndo - Jelajah Indonesia</h1>
+  <div class="container">
+    <!-- Input Container -->
+    <div class="input-container">
+      <p>Masukkan nama provinsi untuk melihat informasi:</p>
+      <input 
+        type="text" 
+        id="provinceInput" 
+        placeholder="Masukkan nama provinsi" 
+        oninput="checkProvince()"
+      />
+      <div>
+        <button onclick="backToHome()">Ke Halaman Pertama</button>
+        <button onclick="goToPageThree()">Ke Halaman Ketiga</button>
+      </div>
+    </div>
+    
+    <!-- Output Container -->
+    <div class="output-container">
+      <div class="info-box" id="infoBox">
+        <h2 id="provinceName"></h2>
+        <img id="provinceImage" src="" alt="Gambar Provinsi">
+        <p><strong>Ibu Kota:</strong> <span id="capital"></span></p>
+        <p><strong>Suku:</strong> <span id="ethnicity"></span></p>
+        <p><strong>Makanan Khas:</strong> <span id="food"></span></p>
+        <p><strong>Pakaian Adat:</strong> <span id="traditionalClothes"></span></p>
+        <p><strong>Rumah Adat:</strong> <span id="customhome"></span></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const provinces = {
+        "Nanggroe Aceh Darussalam": {
+            name: "Nanggroe Aceh Darussalam",
+            image: "https://dishub.acehprov.go.id/wp-content/uploads/2019/02/PEMDA.png",
+            capital: "Banda Aceh",
+            ethnicity: "Gayo",
+            food: "Mie Aceh",
+            traditionalClothes: "Baju Kurung",
+            customHome: "Rumah Aceh"
+        },
+        "Sumatera Utara": {
+            name: "Sumatera Utara",
+            image: "https://iconlogovector.com/uploads/images/2023/05/lg-8981a27f81025a241c8286c3de2bca4422.jpg",
+            capital: "Medan",
+            ethnicity: "Batak",
+            food: "Bika Ambon",
+            traditionalClothes: "Batak Toba",
+            customHome: "Rumah Adat Karo"
+        },
+        "Sumatera Barat": {
+            name: "Sumatera Barat",
+            image: "https://tse2.mm.bing.net/th?id=OIP.YK9rO8ObY3ovvFfnzVpe6wHaFj&pid=Api&P=0&h=220",
+            capital: "Padang",
+            ethnicity: "Minangkabau",
+            food: "Rendang",
+            traditionalClothes: "Bundo Kanduang",
+            customHome: "Rumah Gadang"
+        },
+        "Riau": {
+            name: "Riau",
+            image: "https://logonesia.com/wp-content/uploads/2024/07/Logo-Provinsi-Riau.png",
+            capital: "Pekanbaru",
+            ethnicity: "Melayu",
+            food: "Nasi Lemak",
+            traditionalClothes: "Baju Kurung",
+            customHome: "Rumah Selaso Jatuh Kembar"
+        },
+        "Kepulauan Riau": {
+            name: "Kepulauan Riau",
+            image: "http://2.bp.blogspot.com/-nbaCfisAsXU/T0jhJQFt5kI/AAAAAAAAFbA/_0uF92s4vH8/s1600/LOGO+PROVINSI+KEPULAUAN+RIAU.png",
+            capital: "Tanjung Pinang",
+            ethnicity: "Melayu",
+            food: "Selais Asap",
+            traditionalClothes: "Baju Cekak Musang",
+            customHome: "Rumah Balai Selaso Jatuh"
+        },
+        "Jambi": {
+            name: "Jambi",
+            image: "https://logonesia.com/wp-content/uploads/2024/07/Logo-Provinsi-Jambi-300x169.png",
+            capital: "Jambi",
+            ethnicity: "Melayu",
+            food: "Gulai Ikan Patin",
+            traditionalClothes: "Baju Kurung Tanggung",
+            customHome: "Rumah Panggung"
+        },
+        "Sumatera Selatan": {
+            name: "Sumatera Selatan",
+            image: "https://www.sumselprov.go.id/userfiles/images/logosumsel.png",
+            capital: "Palembang",
+            ethnicity: "Lintang",
+            food: "Pempek",
+            traditionalClothes: "Baju Aesan Gede",
+            customHome: "Rumah Limas"
+        },
+        "Bengkulu": {
+            name: "Bengkulu",
+            image: "https://profil.bengkulukota.go.id/wp-content/uploads/2024/07/Logo_Kota_Bengkulu.png",
+            capital: "Bengkulu",
+            ethnicity: "Rejang",
+            food: "Bagar Hiu",
+            traditionalClothes: "Baju Rejang Lenong",
+            customHome: "Rumah Bubungan Limas"
+        },
+        "Bangka Belitung": {
+            name: "Bangka Belitung",
+            image: "https://iconlogovector.com/uploads/images/2023/05/lg-94d5eec25b527db5f9172a6f58b2102642.jpg",
+            capital: "Pangkal Pinang",
+            ethnicity: "Melayu",
+            food: "Lempah Kuning",
+            traditionalClothes: "Baju Kurung",
+            customHome: "Rumah Melayu"
+        },
+        "Lampung": {
+            name: "Lampung",
+            image: "https://iconlogovector.com/uploads/images/2023/05/lg-082ef93f75c0f9eb20c0e10828856f0848.jpg",
+            capital: "Bandar Lampung",
+            ethnicity: "Lampung",
+            food: "Kemplang",
+            traditionalClothes: "Baju Adat Pepadun",
+            customHome: "Rumah Pepadun Nuwo Sesat"
+        },
+        "Banten": {
+            name: "Banten",
+            image: "https://iconlogovector.com/uploads/images/2023/05/lg-3b0d2feb6db40823c9075e61f6f38ab327.jpg",
+            capital: "Serang",
+            ethnicity: "Baduy",
+            food: "Sate Bandeng",
+            traditionalClothes: "Baju Adat Pangsi",
+            customHome: "Rumah Sulah Nyanda"
+        },
+        "D.K.I Jakarta": {
+            name: "D.K.I Jakarta",
+            image: "https://www.jakarta.go.id/uploads/contents/content--20230330031636.png",
+            capital: "Jakarta",
+            ethnicity: "Betawi",
+            food: "Kerak Telor",
+            traditionalClothes: "Baju Sadariah",
+            customHome: "Rumah Kebaya"
+        },
+"Jawa Barat": {
+    name: "Jawa Barat",
+    image: "https://jabarprov.go.id/images/about/logo.svg",
+    capital: "Bandung",
+    ethnicity: "Sunda",
+    food: "Peuyeum",
+    traditionalClothes: "Kebaya Sunda",
+    customHome: "Joglo"
+  },
+  "Jawa Tengah": {
+    name: "Jawa Tengah",
+    image: "https://seeklogo.com/images/J/jawa-tengah-logo-3FF0655548-seeklogo.com.png",
+    capital: "Semarang",
+    ethnicity: "Jawa",
+    food: "Sate Klathak",
+    traditionalClothes: "Kebaya dan Jawi Jangkep",
+    customHome: "Joglo"
+  },
+  "D.I Yogyakarta": {
+    name: "D.I Yogyakarta",
+    image: "https://jogjaprov.go.id/storage/files/shares/page/1518066730_2d84b769e3cc9d6f06f8c91a6c3e285c.jpg",
+    capital: "Yogyakarta",
+    ethnicity: "Jawa",
+    food: "Gudeg",
+    traditionalClothes: "Kebaya",
+    customHome: "Joglo"
+  },
+  "Jawa Timur": {
+    name: "Jawa Timur",
+    image: "https://2.bp.blogspot.com/-S1hrqQnm0nc/XDCpZ6C7iSI/AAAAAAAABvI/MlNdKdkNBHQa0lU-1I0gyTT5FbFSR2K0QCLcBGAs/s1600/logo%2Bprovinsi%2Bjawa%2Btimur.png",
+    capital: "Surabaya",
+    ethnicity: "Jawa",
+    food: "Rawon",
+    traditionalClothes: "Kebaya dan Baju Pesa’an Madura",
+    customHome: "Joglo"
+  },
+  "Bali": {
+    name: "Bali",
+    image: "https://iconlogovector.com/uploads/images/2023/06/lg-e5eea3f633cc7443d1608746d4844e1558.jpg",
+    capital: "Denpasar",
+    ethnicity: "Bali",
+    food: "Bebek Betutu",
+    traditionalClothes: "Baju Safari dan Payas Agung",
+    customHome: "Rumah Adat Bali Bale Meten"
+  },
+  "Nusa Tenggara Barat": {
+    name: "Nusa Tenggara Barat",
+    image: "https://iconlogovector.com/uploads/images/2023/06/lg-0e79e86f74e46643c281885a12d9310410.jpg",
+    capital: "Mataram",
+    ethnicity: "Sasak",
+    food: "Ayam Taliwangtu",
+    traditionalClothes: "Baju Pasangi dan Poro Rante",
+    customHome: "Rumah Adat Sasak"
+  },
+  "Nusa Tenggara Timur": {
+    name: "Nusa Tenggara Timur",
+    image: "https://iconlogovector.com/uploads/images/2023/06/lg-9885ddd40a0a8788d074fc7535ed041760.jpg",
+    capital: "Kupang",
+    ethnicity: "Timor",
+    food: "Jagung Titi",
+    traditionalClothes: "Pakaian Adat Suku Rote",
+    customHome: "Rumah Adat Timor"
+  },
+  "Kalimantan Barat": {
+    name: "Kalimantan Barat",
+    image: "https://upload.wikimedia.org/wikipedia/commons/5/5d/Coat_of_arms_of_West_Kalimantan.svg",
+    capital: "Pontianak",
+    ethnicity: "Dayak",
+    food: "Soto Pontianak",
+    traditionalClothes: "King Baba dan King Bibinge",
+    customHome: "Rumah Betang Radakng"
+  },
+  "Kalimantan Tengah": {
+    name: "Kalimantan Tengah",
+    image: "http://4.bp.blogspot.com/-a0rStfWG9nM/UNmcMwUsGwI/AAAAAAAAIwc/AcCmv02dmiI/s1600/LOGO+PROVINSI+KALIMANTAN+TENGAH.png",
+    capital: "Palangkaraya",
+    ethnicity: "Dayak",
+    food: "Kalumpe",
+    traditionalClothes: "Baju Pawang dan Baju Tenun",
+    customHome: "Rumah Betang"
+  },
+  "Kalimantan Selatan": {
+    name: "Kalimantan Selatan",
+    image: "https://upload.wikimedia.org/wikipedia/commons/a/a6/Coat_of_arms_of_South_Kalimantan.svg",
+    capital: "Banjarmasin",
+    ethnicity: "Banjar",
+    food: "Soto Banjar",
+    traditionalClothes: "Babaju Kun Galung Pacinan",
+    customHome: "Rumah Betang"
+  },
+  "Kalimantan Timur": {
+    "name": "Kalimantan Timur",
+    "image": "https://iconlogovector.com/uploads/images/2023/06/lg-8964918efb146eebfbbfa25f95b6b8e930.jpg",
+    "capital": "Samarinda",
+    "ethnicity": "Dayak",
+    "food": "Gence Ruan",
+    "traditional_clothes": "Baju adat Takwo",
+    "custom_home": "Rumah Lamin"
+  },
+  "Kalimantan Utara": {
+    "name": "Kalimantan Utara",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Coat_of_arms_of_North_Kalimantan_%282021_version%29.svg/447px-Coat_of_arms_of_North_Kalimantan_%282021_version%29.svg.png?20210624161418",
+    "capital": "Tanjung Selor",
+    "ethnicity": "Dayak",
+    "food": "Kue Gegicak",
+    "traditional_clothes": "Baju Ta’a dan Baju Sapei Sapaq",
+    "custom_home": "Rumah adat Baloy"
+  },
+  Gorontalo: {
+        name: "Gorontalo",
+        image: "https://drive.google.com/uc?id=1LI9Zp3FWzHv8H9BDtN_C3oYGfZGjUmyI",
+        capital: "Gorontalo",
+        ethnicity: "Gorontalo",
+        food: "Binte Biluhuta",
+        traditionalClothes: "Baju adat Madipungu",
+        customHome: "Rumah Dulohupa"
+    },
+    SulawesiTengah: {
+        name: "Sulawesi Tengah",
+        image: "https://iconlogovector.com/uploads/images/2023/06/lg-afe91ecd474f39d607ab910ee98f64f699.jpg",
+        capital: "Palu",
+        ethnicity: "Kaili",
+        food: "Kaledo",
+        traditionalClothes: "Baju adat Suku Kaili",
+        customHome: "Rumah Tambi"
+    },
+    SulawesiSelatan: {
+        name: "Sulawesi Selatan",
+        image: "https://drive.google.com/uc?id=1OA7i72AOUFGJOGdAncnTQ_hVT4QndJb2",
+        capital: "Makassar",
+        ethnicity: "Bugis",
+        food: "Coto Makassar",
+        traditionalClothes: "Baju adat Bella Dada dan Bodo",
+        customHome: "Rumah Adat Bugis"
+    },
+    SulawesiTenggara: {
+        name: "Sulawesi Tenggara",
+        image: "https://drive.google.com/uc?id=1g-hK5gbE_mwqMMU97JJYoH2p0COJTDfk",
+        capital: "Kendari",
+        ethnicity: "Buton",
+        food: "Lapa-lapa",
+        traditionalClothes: "Baju adat Buton",
+        customHome: "Rumah Adat Buton"
+    },
+    SulawesiBarat: {
+        name: "Sulawesi Barat",
+        image: "https://drive.google.com/uc?id=1Un-s7illmCHDWc9fJLwM2_Fs5JwIego3",
+        capital: "Mamuju",
+        ethnicity: "Mandar",
+        food: "Jepa",
+        traditionalClothes: "Baju adat Mandar",
+        customHome: "Rumah Boyang"
+    },
+    Maluku: {
+        name: "Maluku",
+        image: "https://drive.google.com/uc?id=1Zu8a0suvLVjfH3W11kwWwjlhjceBJVgt",
+        capital: "Ambon",
+        ethnicity: "Maluku",
+        food: "Ikan Bakar Colo-Colo",
+        traditionalClothes: "Baju Cele",
+        customHome: "Rumah Baileo"
+    },
+    Maluku_Utara: {
+        name: "Maluku Utara",
+        image: "https://drive.google.com/file/d/12P439nysHp7-1cscrSgEh4PHsdsA54aJ/view?usp=drive_link",
+        capital: "Sofifi",
+        ethnicity: "Ternate",
+        food: "Ikan Kuah Pala Banda",
+        traditionalClothes: "Baju adat Ternate",
+        customHome: "Rumah Hibualamo"
+    },
+    Papua: {
+        name: "Papua",
+        image: "https://drive.google.com/uc?id=13UtpzDj_WuyOnLWY0UwZXtzZPYIxo4Vf",
+        capital: "Jayapura",
+        ethnicity: "Dani",
+        food: "Papeda",
+        traditionalClothes: "Koteka",
+        customHome: "Rumah Honai"
+    },
+    PapuaBarat: {
+        name: "Papua Barat",
+        image: "https://iconlogovector.com/uploads/images/2023/06/lg-fd11ed75cb3a9d2087c4e4792094476054.jpg",
+        capital: "Manokwari",
+        ethnicity: "Arfak",
+        food: "Ikan Kuah Kuning",
+        traditionalClothes: "Baju adat Sali",
+        customHome: "Rumah Honai"
+    },
+    "Papua Tengah": {
+        name: "Papua Tengah",
+        image: "https://drive.google.com/uc?id=1uh_wa08b_fwFEARmOdaGGfwipvNkfy5w",
+        capital: "Nabire",
+        ethnicity: "Mee",
+        food: "Sate Ulat Sagu",
+        traditionalClothes: "Koteka",
+        customHome: "Rumah Honai"
+    },
+    "Papua Pegunungan": {
+        name: "Papua Pegunungan",
+        image: "https://iconlogovector.com/uploads/images/2024/09/lg-66ecf738933f6-Provinsi-Papua-Pegunungan.webp",
+        capital: "Wamena",
+        ethnicity: "Lani",
+        food: "Ubi Tumbuk",
+        traditionalClothes: "Koteka",
+        customHome: "Rumah Honai"
+    },
+    "Papua Selatan": {
+        name: "Papua Selatan",
+        image: "https://drive.google.com/uc?id=1dysXHMfmsZzd2hw1fG1BvpFqYzRPLzBZ",
+        capital: "Merauke",
+        ethnicity: "Marind",
+        food: "Sagu sep",
+        traditionalClothes: "Baju adat Papua",
+        customHome: "Rumah Honai"
+    },
+    "Papua Barat Daya": {
+        name: "Papua Barat Daya",
+        image: "https://drive.google.com/uc?id=1GZDodbylQ__kHnThzVoaub4ZpX2w9ADu",
+        capital: "Sorong",
+        ethnicity: "Moi",
+        food: "Papeda",
+        traditionalClothes: "Baju Adat Papua",
+        customHome: "Rumah Honai"
+    }
+    };
+
+
+
+    function checkProvince() {
+      const input = document.getElementById("provinceInput").value.trim().toLowerCase().replace(/\s+/g, ' ');
+      const province = Object.values(provinces).find(prov => prov.name.toLowerCase().replace(/\s+/g, ' ') === input);
+
+
+      const infoBox = document.getElementById("infoBox");
+
+
+      if (province) {
+        document.getElementById("provinceName").innerText = province.name;
+        document.getElementById("ethnicity").innerText = province.ethnicity;
+        document.getElementById("food").innerText = province.food;
+        document.getElementById("traditionalClothes").innerText = province.traditionalClothes;
+        document.getElementById("capital").innerText = province.capital;
+        document.getElementById("customhome").innerText = province.customHome;
+        document.getElementById("provinceImage").src = province.image;
+        document.getElementById("provinceImage").style.display = "block";
+        infoBox.style.display = "block";
+      } else {
+        infoBox.style.display = "none";
+      }
+    }
+
+
+    function backToHome() {
+      window.location.href = "/"; // Halaman utama
+    }
+
+    function goToPageThree() {
+      window.location.href = "/page3"; // Halaman ketiga
+    }
+  </script>
+</body>
+</html>

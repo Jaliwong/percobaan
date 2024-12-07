@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logo Provinsi Indonesia</title>
+    <style>
+        /* Base styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            width: 70%;
+            max-width: 1200px;
+            margin: 30px auto; /* Add margin to prevent sticking to the top */
+            text-align: center;
+            opacity: 0; /* Start with the container hidden */
+            animation: fadeIn 1s ease-in-out forwards; /* Fade-in animation */
+        }
+        h1 {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .provinsi-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .provinsi-card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .provinsi-card img {
+            width: 60%;
+            border-radius: 8px;
+            max-height: 150px;
+            object-fit: cover;
+        }
+        .provinsi-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        .provinsi-card h2 {
+            margin-top: 15px;
+            font-size: 18px;
+            color: #333;
+        }
+        .provinsi-card p {
+            font-size: 14px;
+            color: #666;
+            margin-top: 9px;
+        }
+        footer {
+            margin-top: 50px;
+            font-size: 14px;
+            color: #999;
+            text-align: center;
+        }
+        .button-container {
+            margin-top: 30px;
+        }
+        .page-button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .page-button:hover {
+            background-color: #555;
+            transform: scale(1.1); /* Scale the button on hover */
+        }
+
+
+        /* Animation for fade-in effect */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+
+    <div class="container">
+        <h1>Daftar Logo Provinsi Indonesia</h1>
+
+
+        <!-- This div will be populated dynamically with JavaScript -->
+        <div class="provinsi-list" id="provinsi-list"></div>
+
+
+        <div class="button-container">
+            <button class="page-button" onclick="backToHome()">Kembali ke Halaman Utama</button>
+            <button class="page-button" onclick="goToPageThree()">Ke Halaman 2</button>
+        </div>
+    </div>
+
+
+    <footer>
+        <p>&copy; 2024 Daftar Logo Provinsi Indonesia. All rights reserved.</p>
+    </footer>
+
+
+    <script>
+        // Data of provinces and their details
+        const provinces = {
+            "Nanggroe Aceh Darussalam": {
+                "name": "Nanggroe Aceh Darussalam",
+                "image": "https://dishub.acehprov.go.id/wp-content/uploads/2019/02/PEMDA.png",
+                "description": "Aceh dikenal dengan masyarakat adat yang kuat dan budaya Islam yang kental."
+            },
+            "Sumatera Utara": {
+                "name": "Sumatera Utara",
+                "image": "https://iconlogovector.com/uploads/images/2023/05/lg-8981a27f81025a241c8286c3de2bca4422.jpg",
+                "description": "Sumatera Utara terkenal dengan keanekaragaman budaya Batak dan Danau Toba yang indah."
+            },
+            "Sumatera Barat": {
+                "name": "Sumatera Barat",
+                "image": "https://tse2.mm.bing.net/th?id=OIP.YK9rO8ObY3ovvFfnzVpe6wHaFj&pid=Api&P=0&h=220",
+                "description": "Sumatera Barat terkenal dengan masakan rendang yang menjadi makanan terlezat di dunia."
+            },
+            "Riau": {
+                "name": "Riau",
+                "image": "https://logonesia.com/wp-content/uploads/2024/07/Logo-Provinsi-Riau.png",
+                "description": "Riau memiliki warisan budaya Melayu yang kuat dan kaya dengan seni sastra."
+            },
+            "Kepulauan Riau": {
+                "name": "Kepulauan Riau",
+                "image": "http://2.bp.blogspot.com/-nbaCfisAsXU/T0jhJQFt5kI/AAAAAAAAFbA/_0uF92s4vH8/s1600/LOGO+PROVINSI+KEPULAUAN+RIAU.png",
+                "description": "Kepulauan Riau dikenal dengan keindahan pulau-pulau dan warisan budaya Melayu."
+            },
+            "Jambi": {
+                "name": "Jambi",
+                "image": "https://logonesia.com/wp-content/uploads/2024/07/Logo-Provinsi-Jambi-300x169.png",
+                "description": "Jambi memiliki budaya Melayu yang erat dengan kehidupan masyarakat pesisir."
+            },
+            "Sumatera Selatan": {
+                "name": "Sumatera Selatan",
+                "image": "https://www.sumselprov.go.id/userfiles/images/logosumsel.png",
+                "description": "Sumatera Selatan terkenal dengan makanan khas pempek dan Jembatan Ampera."
+            },
+            "Bengkulu": {
+                "name": "Bengkulu",
+                "image": "https://profil.bengkulukota.go.id/wp-content/uploads/2024/07/Logo_Kota_Bengkulu.png",
+                "description": "Bengkulu adalah tempat bunga Rafflesia Arnoldii, bunga terbesar di dunia."
+            },
+            "Bangka Belitung": {
+                "name": "Bangka Belitung",
+                "image": "https://iconlogovector.com/uploads/images/2023/05/lg-94d5eec25b527db5f9172a6f58b2102642.jpg",
+                "description": "Bangka Belitung dikenal dengan pantainya yang cantik dan tambang timah."
+            },
+            "Lampung": {
+                "name": "Lampung",
+                "image": "https://iconlogovector.com/uploads/images/2023/05/lg-082ef93f75c0f9eb20c0e10828856f0848.jpg",
+                "description": "Lampung adalah pintu gerbang Sumatera dengan Taman Nasional Way Kambas."
+            }
+        };
+
+
+        // Function to render provinces dynamically
+        function renderProvinces() {
+            const listContainer = document.getElementById('provinsi-list');
+            for (const provinceKey in provinces) {
+                const province = provinces[provinceKey];
+                const provinceCard = document.createElement('div');
+                provinceCard.classList.add('provinsi-card');
+
+
+                provinceCard.innerHTML = `
+                    <img src="${province.image}" alt="Logo Provinsi ${province.name}">
+                    <h2>${province.name}</h2>
+                    <p>${province.description}</p>
+                `;
+
+
+                listContainer.appendChild(provinceCard);
+            }
+        }
+
+
+        // Call the renderProvinces function to display the data
+        renderProvinces();
+
+
+        function backToHome() {
+            window.location.href = "/"; // Halaman utama
+        }
+
+
+        function goToPageThree() {
+            window.location.href = "/page2"; // Halaman kedua
+        }
+    </script>
+</body>
+</html>
+
+
+
